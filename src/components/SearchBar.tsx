@@ -1,63 +1,91 @@
+"use client"
+
+import * as React from "react"
+import { Check, ChevronsUpDown } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import {
-    Calculator,
-    Calendar,
-    CreditCard,
-    Settings,
-    Smile,
-    User,
-  } from "lucide-react"
-  
-  import {
     Command,
     CommandEmpty,
     CommandGroup,
     CommandInput,
     CommandItem,
-    CommandList,
-    CommandSeparator,
-    CommandShortcut,
-  } from "@/components/ui/command"
-  
-  export default function CommandDemo() {
+} from "@/components/ui/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+
+const frameworks = [
+    {
+        value: "生成B站视频标题",
+        label: "生成B站视频标题",
+    },
+    {
+        value: "测试",
+        label: "测试",
+    },
+    {
+        value: "nuxt.js",
+        label: "Nuxt.js",
+    },
+    {
+        value: "remix",
+        label: "Remix",
+    },
+    {
+        value: "astro",
+        label: "Astro",
+    },
+]
+
+export default function CommandCombobox() {
+    const [open, setOpen] = React.useState<boolean>(false)
+    const [value, setValue] = React.useState<string>("")
+
     return (
-      <Command className="rounded-lg border shadow-md">
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Bilibili">
-            <CommandItem>
-              <Calendar className="mr-2 h-4 w-4" />
-              <span>生成B站视频标题</span>
-            </CommandItem>
-            <CommandItem>
-              <Smile className="mr-2 h-4 w-4" />
-              <span>生成B站视频描述</span>
-            </CommandItem>
-            <CommandItem>
-              <Calculator className="mr-2 h-4 w-4" />
-              <span>生成B站视频标签</span>
-            </CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="小红书">
-            <CommandItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>生成小红书标题</span>
-              <CommandShortcut>⌘P</CommandShortcut>
-            </CommandItem>
-            <CommandItem>
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>生成小红书文案</span>
-              <CommandShortcut>⌘B</CommandShortcut>
-            </CommandItem>
-            <CommandItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-              <CommandShortcut>⌘S</CommandShortcut>
-            </CommandItem>
-          </CommandGroup>
-        </CommandList>
-      </Command>
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-[200px] justify-between"
+                >
+                    {value
+                        ? frameworks.find((framework) => framework.value === value)?.label
+                        : "Select framework..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+                <Command >
+                    <CommandInput placeholder="Search framework..." />
+                    <CommandEmpty>No framework found.</CommandEmpty>
+                    <CommandGroup>
+                        {frameworks.map((framework) => (
+                            <CommandItem
+                                value={framework.value}
+                                key={framework.value}
+                                onSelect={(currentValue) => {
+                                    setValue(currentValue === value ? "" : currentValue)
+                                    setOpen(false)
+                                }}
+                            >
+                                <Check
+                                    className={cn(
+                                        "mr-2 h-4 w-4",
+                                        value === framework.value ? "opacity-100" : "opacity-0"
+                                    )}
+                                />
+                                {framework.label}
+                            </CommandItem>
+                        ))}
+                    </CommandGroup>
+                </Command>
+            </PopoverContent>
+        </Popover>
     )
-  }
-  
+}
